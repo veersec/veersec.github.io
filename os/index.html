@@ -1,1 +1,167 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeerSec OS</title>
+
+<style>
+body {
+  margin:0;
+  background:#020202;
+  color:#00ff88;
+  font-family:monospace;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+/* TERMINAL BOX */
+.terminal {
+  width:95%;
+  max-width:900px;
+  height:85vh;
+  background:rgba(0,0,0,0.8);
+  border:1px solid #00ff88;
+  box-shadow:0 0 20px rgba(0,255,136,0.3);
+  padding:20px;
+  overflow:auto;
+  backdrop-filter: blur(6px);
+}
+
+/* INPUT AREA */
+.input-area {
+  display:flex;
+  padding:10px;
+}
+
+input {
+  flex:1;
+  background:black;
+  border:none;
+  color:#00ff88;
+  font-size:16px;
+  outline:none;
+}
+
+/* TEXT */
+.line { margin:6px 0; }
+
+/* MOBILE */
+@media(max-width:600px){
+  .terminal {height:80vh;font-size:13px;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="terminal" id="terminal"></div>
+
+<div class="input-area">
+  <span>> </span>
+  <input id="cmd" autofocus>
+</div>
+
+<script>
+
+const t=document.getElementById("terminal");
+const i=document.getElementById("cmd");
+
+// typing animation
+function type(text, speed=20){
+  return new Promise(resolve=>{
+    let div=document.createElement("div");
+    div.className="line";
+    t.appendChild(div);
+
+    let i=0;
+    function write(){
+      if(i<text.length){
+        div.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(write,speed);
+      } else resolve();
+    }
+    write();
+  });
+}
+
+// print normal
+function p(text){
+  let d=document.createElement("div");
+  d.className="line";
+  d.innerText=text;
+  t.appendChild(d);
+  t.scrollTop=t.scrollHeight;
+}
+
+// boot animation
+async function boot(){
+  await type("Booting VeerSec OS...");
+  await type("Loading modules...");
+  await type("Access Granted ✅");
+  await type("Type 'help' to begin");
+}
+
+boot();
+
+// commands
+i.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    let cmd=i.value.trim();
+    p("> "+cmd);
+    run(cmd);
+    i.value="";
+  }
+});
+
+function run(cmd){
+
+  if(cmd==="help"){
+    p("Commands:");
+    p("whoami | skills | projects | contact | clear");
+  }
+
+  else if(cmd==="whoami"){
+    p("Veerxx - Cybersecurity Specialist");
+    p("4+ years experience in VAPT");
+  }
+
+  else if(cmd==="skills"){
+    p("Web Security");
+    p("Network Pentesting");
+    p("Burp Suite | Nmap | Metasploit");
+  }
+
+  else if(cmd==="projects"){
+    p("Fetching GitHub...");
+    fetch("https://api.github.com/users/Veerxx/repos")
+    .then(r=>r.json())
+    .then(data=>{
+      data.slice(0,5).forEach(repo=>{
+        p(repo.name + " → " + repo.html_url);
+      });
+    });
+  }
+
+  else if(cmd==="contact"){
+    p("GitHub: https://github.com/Veerxx");
+    p("Add LinkedIn here");
+  }
+
+  else if(cmd==="clear"){
+    t.innerHTML="";
+  }
+
+  else{
+    p("Command not found");
+  }
+}
+
+</script>
+
+</body>
+</html>
